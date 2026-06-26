@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cute Birthday Surprise</title>
-    <!-- বাংলা ফন্ট Baloo Da 2 এবং Quicksand -->
+    <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@400;500;600;700;800&family=Quicksand:wght@500;700;800&display=swap" rel="stylesheet">
     
     <!-- Lottie & Confetti libraries -->
@@ -12,8 +12,7 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     
     <style>
-        /* Base Styling & Theme */
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Baloo Da 2', 'Quicksand', sans-serif; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Quicksand', sans-serif; }
         body {
             display: flex; justify-content: center; align-items: center;
             min-height: 100vh; background: linear-gradient(135deg, #ffdde1 0%, #ee9ca7 100%);
@@ -31,7 +30,6 @@
             display: flex; flex-direction: column; align-items: center; 
         }
 
-        /* Screens */
         .screen {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
@@ -57,15 +55,13 @@
         
         @keyframes pulseBtn { 0% { box-shadow: 0 0 0 0 rgba(255,117,140,0.4); } 70% { box-shadow: 0 0 0 10px rgba(255,117,140,0); } 100% { box-shadow: 0 0 0 0 rgba(255,117,140,0); } }
 
-        /* Lottie */
         .lottie-container { width: 200px; height: 200px; margin-bottom: 15px; filter: drop-shadow(0px 10px 10px rgba(0,0,0,0.05)); }
         .lottie-small { width: 140px; height: 140px; }
         .lottie-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.3; z-index: 0; pointer-events: none; }
         
         /* Sticker Box (Fixed Size) */
         .sticker-box {
-            width: 200px; 
-            height: 200px; 
+            width: 200px; height: 200px; 
             margin: 0 auto 20px auto; border-radius: 30px;
             overflow: hidden; background: #fff; display: flex; align-items: center; justify-content: center;
             box-shadow: inset 0 0 0 4px #ffe2ed, 0 10px 20px rgba(255, 182, 193, 0.4);
@@ -81,8 +77,7 @@
         
         .polaroid {
             flex: 0 0 auto; scroll-snap-align: center;
-            width: 200px; 
-            height: 250px; 
+            width: 200px; height: 250px; 
             background: white; padding: 10px 10px 20px 10px; margin: 5px 15px;
             border-radius: 8px; box-shadow: 0 10px 20px rgba(0,0,0,0.15); transform: rotate(-2deg);
             display: flex; flex-direction: column; justify-content: space-between; align-items: center;
@@ -90,7 +85,7 @@
         .polaroid:nth-child(even) { transform: rotate(2deg); }
         .polaroid img { width: 100%; height: 185px; object-fit: cover; border-radius: 5px; }
         .polaroid-caption { font-weight: 700; color: #ff758c; margin-top: 5px; font-size: 16px; }
-        
+
         /* Interactive Balloons */
         .balloon-game { display: flex; gap: 20px; margin: 20px 0; z-index: 3; }
         .pop-balloon {
@@ -125,56 +120,41 @@
             100% { transform: translateX(-50%) scale(0.5); opacity: 0; }
         }
 
-        /* --- New Fortune Wheel (Roulette Style) --- */
+        /* Fortune Wheel (Roulette Style) */
         .wheel-wrapper {
             position: relative; width: 250px; height: 250px; margin: 20px auto; 
             filter: drop-shadow(0 15px 25px rgba(255,182,193,0.6));
         }
-        /* Top Pointer */
         .wheel-pointer {
             position: absolute; top: -12px; left: 50%; transform: translateX(-50%); z-index: 10;
             width: 0; height: 0; 
             border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 28px solid #ff3366;
             filter: drop-shadow(0 4px 4px rgba(0,0,0,0.3));
         }
-        /* Outer Rim */
         .wheel-outer {
             width: 100%; height: 100%; border-radius: 50%;
             background: #ff7eb3; padding: 12px;
             box-shadow: inset 0 0 10px rgba(0,0,0,0.2), 0 0 0 5px rgba(255,255,255,0.5);
             position: relative;
-            transition: transform 4.5s cubic-bezier(0.17, 0.67, 0.12, 0.99); /* Smooth realistic spin */
+            transition: transform 4.5s cubic-bezier(0.17, 0.67, 0.12, 0.99);
         }
-        /* Inner Colorful Wheel */
         .wheel-inner {
             width: 100%; height: 100%; border-radius: 50%;
-            background: conic-gradient( 
-                #ffd9e8 0 60deg, 
-                #ffb6c1 60deg 120deg, 
-                #ff9ec1 120deg 180deg, 
-                #b0e0e6 180deg 240deg, 
-                #e6e6fa 240deg 300deg, 
-                #fbc0cb 300deg 360deg 
-            );
-            position: relative; overflow: hidden;
-            border: 3px solid #fff;
+            background: conic-gradient( #ffd9e8 0 60deg, #ffb6c1 60deg 120deg, #ff9ec1 120deg 180deg, #b0e0e6 180deg 240deg, #e6e6fa 240deg 300deg, #fbc0cb 300deg 360deg );
+            position: relative; overflow: hidden; border: 3px solid #fff;
         }
-        /* Numbers inside slices */
         .wheel-num {
             position: absolute; top: 50%; left: 50%; margin-top: -15px; margin-left: -15px;
             width: 30px; height: 30px; text-align: center;
-            font-weight: 800; font-size: 24px; color: #5e4b5a;
-            font-family: 'Quicksand', sans-serif;
+            font-weight: 800; font-size: 24px; color: #5e4b5a; font-family: 'Quicksand', sans-serif;
             text-shadow: 1px 1px 0 rgba(255,255,255,0.8);
         }
-        /* Center Pin */
         .wheel-center {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
             width: 28px; height: 28px; background: #fff; border-radius: 50%;
             box-shadow: 0 4px 8px rgba(0,0,0,0.4), inset 0 0 4px rgba(0,0,0,0.1);
             border: 4px solid #ff7eb3; z-index: 5;
         }
-        /* Decorative Pegs on Rim */
         .wheel-pegs { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
         .wheel-pegs .peg {
             position: absolute; top: 50%; left: 50%; margin-top: -5px; margin-left: -5px;
@@ -185,9 +165,9 @@
         /* Voice Note */
         .voice-note {
             background: rgba(255,255,255,0.9); border-radius: 30px; padding: 10px 20px; display: flex; align-items: center; gap: 10px;
-            box-shadow: 0 5px 15px rgba(255, 182, 193, 0.4); margin-top: 15px; cursor: pointer; border: 2px solid #ffe2ed;
+            box-shadow: 0 5px 15px rgba(255, 182, 193, 0.4); margin-top: 15px; cursor: pointer; border: 2px solid #ffe2ed; width: 100%; max-width: 250px;
         }
-        .play-btn { width: 35px; height: 35px; background: #ff7eb3; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; }
+        .play-btn { width: 35px; height: 35px; background: #ff7eb3; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; flex-shrink: 0;}
         .waveform { height: 20px; flex-grow: 1; background: repeating-linear-gradient(90deg, #ffb6c1, #ffb6c1 2px, transparent 2px, transparent 4px); opacity: 0.5; border-radius: 10px; }
         .voice-note.playing .waveform { opacity: 1; animation: wave 1s infinite alternate; }
 
@@ -196,10 +176,19 @@
         .scratch-secret { position: absolute; top:0; left:0; width:100%; height:100%; background: #fff5f9; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 22px; font-weight: bold; color: #d6336c; padding: 20px; text-align: center; }
         canvas { position: absolute; top:0; left:0; width:100%; height:100%; touch-action: none; cursor: pointer; }
 
+        /* Card blocks for Typewriter */
+        .typewriter-box { text-align: left; background: rgba(255, 255, 255, 0.8); padding: 15px; border-radius: 15px; box-shadow: 0 8px 20px rgba(255, 182, 193, 0.2); font-size: 17px; font-weight: 600; color: #b34e7a; min-height: 120px; border: 2px dashed #ffc0cb; line-height: 1.5; width: 100%;}
+        
+        .final-card {
+            background: rgba(255, 255, 255, 0.95); padding: 20px; border-radius: 20px; 
+            box-shadow: 0 15px 30px rgba(255, 182, 193, 0.6); border: 3px dashed #ff7eb3; 
+            width: 90%; text-align: center; min-height: 140px; margin-top: 15px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+
         /* Utilities */
         .hidden { display: none !important; opacity: 0; }
         .bg-item { position: absolute; pointer-events: none; opacity: 0.5; z-index: 0; animation: floatUp linear infinite; }
-        .typewriter-box { text-align: left; background: rgba(255, 255, 255, 0.8); padding: 15px; border-radius: 15px; box-shadow: 0 8px 20px rgba(255, 182, 193, 0.2); font-size: 17px; font-weight: 600; color: #b34e7a; min-height: 120px; border: 2px dashed #ffc0cb; line-height: 1.5; }
         
         @keyframes floatUp { 0% { transform: translateY(100vh) scale(0.5) rotate(0deg); opacity: 0; } 20% { opacity: 0.6; } 80% { opacity: 0.6; } 100% { transform: translateY(-20vh) scale(1.2) rotate(360deg); opacity: 0; } }
         @keyframes swing { 0% { transform: rotate(-3deg); } 100% { transform: rotate(3deg); } }
@@ -217,8 +206,8 @@
             <div class="sticker-box" style="animation: swing 3s infinite alternate;">
                 <div class="tenor-gif-embed" data-postid="16115986830929782472" data-share-method="host" data-aspect-ratio="1" data-width="100%"></div>
             </div>
-            <h2>তুমি কি জানো আজকে একটা কিউটিপাইয়ের জন্মদিন? 🤔</h2>
-            <button class="btn" onclick="goToScreen(2)">চলো দেখি এটা কে 🤔</button>
+            <h2>Do you know a cutiepie was born today? 🤔</h2>
+            <button class="btn" onclick="goToScreen(2)">Let's see who it is 🤔</button>
         </div>
 
         <!-- SCREEN 2: Angry/Cute Cat -->
@@ -226,23 +215,23 @@
             <div class="sticker-box shake-anim" style="animation-iteration-count: infinite; animation-duration: 2s;">
                 <div class="tenor-gif-embed" data-postid="22885994" data-share-method="host" data-aspect-ratio="1" data-width="100%"></div>
             </div>
-            <h2 style="font-size: 28px;">এত ভাবার কি আছে 😠</h2>
-            <p style="font-size: 20px; font-weight: 700; color: #d6336c; margin-bottom: 5px;">আরেহ এটা তুমি!</p>
-            <p>তোমার জন্য ছোট্ট কিছু আছে...</p>
-            <button class="btn" onclick="goToScreen(3)">🎁 সারপ্রাইজ শুরু করি</button>
+            <h2 style="font-size: 28px;">What's there to think so much 😠</h2>
+            <p style="font-size: 20px; font-weight: 700; color: #d6336c; margin-bottom: 5px;">Hey, it's YOU!</p>
+            <p>There is a little something for you...</p>
+            <button class="btn" onclick="goToScreen(3)">🎁 Start the surprise</button>
         </div>
 
-        <!-- SCREEN 3: Cake (Original) -->
+        <!-- SCREEN 3: Cake -->
         <div id="screen-3" class="screen">
             <div id="anim-cake" class="lottie-container"></div>
-            <h2>কেক কাটা যাক! 🎂</h2>
-            <button class="btn" onclick="goToScreen(4)">সামনে যাই ➔</button>
+            <h2>Let's cut the cake! 🎂</h2>
+            <button class="btn" onclick="goToScreen(4)">Next ➔</button>
         </div>
 
         <!-- SCREEN 4: Balloons -->
         <div id="screen-4" class="screen">
-            <h2>এবার পার্টি টাইম! 🎉</h2>
-            <p>নিচের ৩টি বেলুন ফাটাও!</p>
+            <h2>Party Time! 🎉</h2>
+            <p>Pop the 3 balloons below!</p>
             <div id="anim-balloons" class="lottie-bg" style="opacity: 0.2;"></div>
             
             <div class="balloon-game">
@@ -250,19 +239,18 @@
                 <div class="pop-balloon" onclick="popMe(this, 1)"></div>
                 <div class="pop-balloon" onclick="popMe(this, 2)"></div>
             </div>
-            <button id="btn-screen-4" class="btn hidden" onclick="goToScreen(5)">সামনে যাই ➔</button>
+            <button id="btn-screen-4" class="btn hidden" onclick="goToScreen(5)">Next ➔</button>
         </div>
 
         <!-- SCREEN 5: Fortune Wheel (Age 17) -->
         <div id="screen-5" class="screen">
             <h2>Age Reveal Time! ⏳</h2>
-            <p>হুইলটা ঘুরিয়ে দেখি বয়স কত হলো...</p>
+            <p>Let's spin the wheel and see your age...</p>
             
             <div class="wheel-wrapper">
                 <div class="wheel-pointer"></div>
                 <div class="wheel-outer" id="age-wheel">
                     <div class="wheel-inner">
-                        <!-- Each text is rotated from center and pushed outwards -->
                         <div class="wheel-num" style="transform: rotate(30deg) translateY(-72px);">15</div>
                         <div class="wheel-num" style="transform: rotate(90deg) translateY(-72px);">16</div>
                         <div class="wheel-num" style="transform: rotate(150deg) translateY(-72px);">17</div>
@@ -271,7 +259,6 @@
                         <div class="wheel-num" style="transform: rotate(330deg) translateY(-72px);">20</div>
                     </div>
                     <div class="wheel-center"></div>
-                    <!-- White Pegs around the wheel -->
                     <div class="wheel-pegs">
                         <div class="peg" style="transform: rotate(0deg) translateY(-115px)"></div>
                         <div class="peg" style="transform: rotate(30deg) translateY(-115px)"></div>
@@ -291,54 +278,60 @@
             
             <button class="btn" id="spin-btn" onclick="spinWheel()">Spin The Wheel 🎡</button>
             <h2 id="age-msg" class="hidden" style="margin-top: 10px; font-size: 26px; color: #ff3366;">Welcome to age 17! 🎉</h2>
-            <button id="btn-screen-5" class="btn hidden" onclick="goToScreen(6)">সামনে যাই ➔</button>
+            <button id="btn-screen-5" class="btn hidden" onclick="goToScreen(6)">Next ➔</button>
         </div>
 
         <!-- SCREEN 6: Swipe Gallery -->
         <div id="screen-6" class="screen">
             <div id="anim-paper" class="lottie-bg"></div>
-            <h2>কিছু স্পেশাল মেমোরি 📸</h2>
-            <p style="font-size: 15px;">(ডানে-বাঁয়ে সোয়াইপ করো)</p>
+            <h2>Some special memories 📸</h2>
+            <p style="font-size: 15px;">(Swipe left-right)</p>
             
             <div class="gallery-wrap">
                 <div class="polaroid">
                     <img src="https://i.postimg.cc/XNDgS4vM/IMG-20260222-WA0004.jpg" alt="photo 1">
-                    <div class="polaroid-caption">~ মিষ্টি হাসি ~</div>
+                    <div class="polaroid-caption">~ Sweet smile ~</div>
                 </div>
                 <div class="polaroid">
                     <img src="https://i.postimg.cc/XNDgS4vM/IMG-20260222-WA0004.jpg" style="filter: hue-rotate(45deg);" alt="photo 2">
-                    <div class="polaroid-caption">~ সবচেয়ে কিউট ~</div>
+                    <div class="polaroid-caption">~ Cutest ever ~</div>
                 </div>
                 <div class="polaroid">
                     <img src="https://i.postimg.cc/XNDgS4vM/IMG-20260222-WA0004.jpg" style="filter: grayscale(50%);" alt="photo 3">
-                    <div class="polaroid-caption">~ পারফেক্ট ফ্রেন্ড ~</div>
+                    <div class="polaroid-caption">~ Perfect friend ~</div>
                 </div>
             </div>
 
-            <button class="btn" onclick="goToScreen(7)">✉️ আমার চিঠি পড়ো</button>
+            <!-- Changed to go to screen 7 (Mailbox Intro) -->
+            <button class="btn" onclick="goToScreen(7)">✉️ Get my letter</button>
         </div>
 
-        <!-- SCREEN 7: Letter & Voice Note -->
+        <!-- SCREEN 7: Mailbox Intro (NEW) -->
         <div id="screen-7" class="screen">
-            <div id="anim-letter" class="lottie-container lottie-small" style="margin-bottom: 10px;"></div>
-            <h2>শুভ জন্মদিন 💖</h2>
+            <h2>You've got mail! 💌</h2>
+            <p>Tap the letter box to open it...</p>
+            <div id="anim-letter" class="lottie-container" style="cursor: pointer; transform: scale(1.1); margin-top: 20px;" onclick="goToScreen(8)"></div>
+        </div>
+
+        <!-- SCREEN 8: Letter & Voice Note -->
+        <div id="screen-8" class="screen">
+            <h2>Happy Birthday 💖</h2>
             
             <div class="typewriter-box" id="letter-content"></div>
 
-            <!-- Voice Note Player -->
             <div class="voice-note" id="v-note" onclick="playVoiceNote()">
                 <div class="play-btn" id="v-icon">▶</div>
                 <div class="waveform"></div>
-                <span style="font-size: 14px; font-weight: bold; color: #b34e7a;">ভয়েস নোট শোনো</span>
+                <span style="font-size: 14px; font-weight: bold; color: #b34e7a;">Listen to voice note</span>
             </div>
 
-            <button id="btn-screen-7" class="btn hidden" onclick="goToScreen(8)">আরও একটা জিনিস ➔</button>
+            <button id="btn-screen-8" class="btn hidden" onclick="goToScreen(9)">One more thing ➔</button>
         </div>
 
-        <!-- SCREEN 8: Scratch Card (Silver Color) -->
-        <div id="screen-8" class="screen">
-            <h2>গোপন মেসেজ! 🤫</h2>
-            <p>আঙুল দিয়ে ঘষে মেসেজটা পড়ো...</p>
+        <!-- SCREEN 9: Scratch Card (Silver Color) -->
+        <div id="screen-9" class="screen">
+            <h2>Secret Message! 🤫</h2>
+            <p>Scratch with your finger to read...</p>
             
             <div class="scratch-container">
                 <div class="scratch-secret">
@@ -348,20 +341,17 @@
                 <canvas id="scratch-canvas" width="220" height="220"></canvas>
             </div>
 
-            <button id="btn-screen-8" class="btn hidden" onclick="goToScreen(9)">ফাইনাল গিফট ➔</button>
+            <button id="btn-screen-9" class="btn hidden" onclick="goToScreen(10)">Final Gift ➔</button>
         </div>
 
-        <!-- SCREEN 9: Final Gift -->
-        <div id="screen-9" class="screen">
-            <h2 id="gift-text">গিফটের উপরে ট্যাপ করো...</h2>
+        <!-- SCREEN 10: Final Gift -->
+        <div id="screen-10" class="screen">
+            <h2 id="gift-text">Tap on the gift...</h2>
             <div id="anim-gift" class="lottie-container" style="cursor: pointer; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'" onclick="openFinalGift()"></div>
             
-            <div id="final-msg-box" class="hidden" style="animation: swing 3s infinite alternate;">
-                <h2 style="font-size: 32px; text-shadow: 0 0 10px rgba(255,117,140,0.5);">🎉 সারপ্রাইজ! 🎉</h2>
-                <p style="color:#d6336c; font-weight: 700; font-size: 20px; line-height: 1.5; margin-top: 10px;">
-                    অনেক অনেক ভালোবাসা তোমার জন্য! ❤️<br>
-                    সারাজীবন এমনই হাসিখুশি থেকো!
-                </p>
+            <div id="final-msg-box" class="hidden final-card" style="animation: swing 4s infinite alternate;">
+                <!-- Content will be typed out here -->
+                <div id="final-typewriter-content" style="color:#d6336c; font-weight: 700; font-size: 20px; line-height: 1.5;"></div>
             </div>
         </div>
 
@@ -408,7 +398,7 @@
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById('screen-' + num).classList.add('active');
             
-            if (num === 7 && !typed) { startTypewriter(); typed = true; }
+            if (num === 8 && !typed) { startTypewriter(); typed = true; }
         }
 
         // --- Balloon logic & Pop Text ---
@@ -419,7 +409,6 @@
             if(balloon.style.transform !== "scale(0)") {
                 balloon.style.transform = "scale(0)"; balloon.style.opacity = "0"; 
                 
-                // Show Dynamic Text
                 let textEl = document.createElement('div');
                 textEl.innerText = popWords[index];
                 textEl.className = 'pop-text-effect';
@@ -440,14 +429,10 @@
         function spinWheel() {
             const wheel = document.getElementById('age-wheel');
             const btn = document.getElementById('spin-btn');
-            btn.classList.add('hidden'); // Hide spin button
+            btn.classList.add('hidden'); 
             
-            // Math magic: Rotate so '17' perfectly aligns at the top
-            // '17' is originally at 150deg. Rotating by 2010deg (5 full spins + 210deg).
-            // 150 + 210 = 360deg (which is the top!)
             wheel.style.transform = `rotate(2010deg)`;
             
-            // Show message after spin finishes
             setTimeout(() => {
                 document.getElementById('age-msg').classList.remove('hidden');
                 document.getElementById('btn-screen-5').classList.remove('hidden');
@@ -455,15 +440,32 @@
             }, 4500);
         }
 
+        // --- STREAMING_CHUNK: Text Animation and Games ---
         // --- Typewriter Logic ---
-        const letterText = "পৃথিবীর সবচেয়ে দারুণ মানুষটিকে শুভ জন্মদিন! 🌟 তুমি জানো না তুমি কতটা স্পেশাল। তোমার এই মিষ্টি হাসিটা যেন সবসময় এমনই থাকে ❤️";
+        const letterText = "Happy birthday to the most amazing person in the world! 🌟 You don't know how truly special you are. May your sweet smile always stay just like this ❤️";
         let textIndex = 0; let typed = false;
         function startTypewriter() {
             if (textIndex < letterText.length) {
                 document.getElementById("letter-content").innerHTML += letterText.charAt(textIndex);
-                textIndex++; setTimeout(startTypewriter, 70);
+                textIndex++; setTimeout(startTypewriter, 60);
             } else {
-                setTimeout(() => { document.getElementById("btn-screen-7").classList.remove("hidden"); }, 500);
+                setTimeout(() => { document.getElementById("btn-screen-8").classList.remove("hidden"); }, 500);
+            }
+        }
+
+        // --- Final Surprise Typewriter Logic ---
+        const finalMsgText = "🎉 Surprise! 🎉\nLots of love for you! ❤️\nAlways stay smiling like this!";
+        let finalIndex = 0;
+        function startFinalTypewriter() {
+            const container = document.getElementById("final-typewriter-content");
+            if (finalIndex < finalMsgText.length) {
+                if(finalMsgText.charAt(finalIndex) === '\n') {
+                    container.innerHTML += '<br><br>'; // Add spacing for new lines
+                } else {
+                    container.innerHTML += finalMsgText.charAt(finalIndex);
+                }
+                finalIndex++;
+                setTimeout(startFinalTypewriter, 60);
             }
         }
 
@@ -483,7 +485,6 @@
             const ctx = canvas.getContext('2d');
             let isDrawing = false; let scratchedPixels = 0;
             
-            // Silver Cover
             ctx.fillStyle = '#b5b5b5';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             for(let i=0; i<100; i++) {
@@ -491,10 +492,10 @@
                 ctx.fillRect(Math.random()*canvas.width, Math.random()*canvas.height, 10, 10);
             }
             
-            ctx.font = 'bold 22px "Baloo Da 2"';
+            ctx.font = 'bold 22px "Quicksand"';
             ctx.fillStyle = '#ffffff';
             ctx.textAlign = "center";
-            ctx.fillText('এখানে ঘষো! 🪙', canvas.width/2, canvas.height/2 + 8);
+            ctx.fillText('Scratch here! 🪙', canvas.width/2, canvas.height/2 + 8);
             
             function getPos(e) {
                 const rect = canvas.getBoundingClientRect();
@@ -512,7 +513,7 @@
                 
                 scratchedPixels++;
                 if(scratchedPixels > 40) { 
-                    document.getElementById('btn-screen-8').classList.remove('hidden');
+                    document.getElementById('btn-screen-9').classList.remove('hidden');
                 }
             }
             
@@ -524,11 +525,15 @@
             canvas.addEventListener('touchend', ()=> isDrawing=false);
         }
 
+        // --- STREAMING_CHUNK: Final Reveal and Effects ---
         // --- Final Gift ---
         function openFinalGift() {
             document.getElementById('anim-gift').style.display = 'none';
             document.getElementById('gift-text').classList.add('hidden');
             document.getElementById('final-msg-box').classList.remove('hidden');
+            
+            // Start the typewriter effect for the final message
+            startFinalTypewriter();
             
             var duration = 4 * 1000; var end = Date.now() + duration;
             (function frame() {
