@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cute Birthday Surprise</title>
+    <!-- বাংলা ফন্ট Baloo Da 2 এবং Quicksand -->
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@400;500;600;700;800&family=Quicksand:wght@500;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Lottie & Confetti libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
+    <style>
+        /* Base Styling & Theme */
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Baloo Da 2', 'Quicksand', sans-serif; }
+        body {
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh; background: linear-gradient(135deg, #ffdde1 0%, #ee9ca7 100%);
+            margin: 0; padding: 10px; overflow: hidden; transition: background 2s ease-in-out;
+        }
+
+        /* Glassmorphism container (Fixed Sizes as requested) */
+        .mobile-container {
+            width: 320px; 
+            height: 600px;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(10px); border-radius: 40px;
+            box-shadow: 0 20px 40px rgba(255, 182, 193, 0.4), inset 0 0 0 6px rgba(255, 255, 255, 0.8);
+            position: relative; overflow: hidden;
+            display: flex; flex-direction: column; align-items: center; 
+        }
+
+        /* Screens */
+        .screen {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            padding: 30px 20px; text-align: center; 
+            opacity: 0; transform: scale(0.95) translateY(20px);
+            pointer-events: none; transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); 
+            border-radius: inherit; z-index: 1;
+        }
+        .screen.active { opacity: 1; transform: scale(1) translateY(0); pointer-events: auto; z-index: 10; }
+        
+        h2 { color: #d6336c; font-size: 26px; margin-bottom: 15px; z-index: 2; text-shadow: 1px 1px 2px rgba(255,255,255,0.8); }
+        p { color: #6e5c65; font-size: 18px; margin-bottom: 18px; line-height: 1.5; z-index: 2; font-weight: 500; }
+        
+        /* Buttons */
+        .btn {
+            background: linear-gradient(45deg, #ff758c 0%, #ff7eb3 100%);
+            color: white; border: none; padding: 12px 28px;
+            border-radius: 40px; font-size: 18px; font-weight: 700; cursor: pointer;
+            margin-top: 15px; transition: all 0.3s ease; z-index: 2;
+            box-shadow: 0 8px 15px rgba(255, 117, 140, 0.3); animation: pulseBtn 2s infinite;
+        }
+        .btn:hover { transform: translateY(-3px) scale(1.05); box-shadow: 0 12px 20px rgba(255, 117, 140, 0.4); }
+        
+        @keyframes pulseBtn { 0% { box-shadow: 0 0 0 0 rgba(255,117,140,0.4); } 70% { box-shadow: 0 0 0 10px rgba(255,117,140,0); } 100% { box-shadow: 0 0 0 0 rgba(255,117,140,0); } }
+
+        /* Lottie */
+        .lottie-container { width: 200px; height: 200px; margin-bottom: 15px; filter: drop-shadow(0px 10px 10px rgba(0,0,0,0.05)); }
+        .lottie-small { width: 140px; height: 140px; }
+        .lottie-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.3; z-index: 0; pointer-events: none; }
+        
+        /* Sticker Box (Fixed Size) */
+        .sticker-box {
+            width: 200px; 
+            height: 200px; 
+            margin: 0 auto 20px auto; border-radius: 30px;
+            overflow: hidden; background: #fff; display: flex; align-items: center; justify-content: center;
+            box-shadow: inset 0 0 0 4px #ffe2ed, 0 10px 20px rgba(255, 182, 193, 0.4);
+        }
+        .sticker-box .tenor-gif-embed { width: 100%; height: 100%; pointer-events: none; }
+
+        /* Gallery Slider & Polaroid (Fixed Size) */
+        .gallery-wrap {
+            display: flex; overflow-x: auto; scroll-snap-type: x mandatory; width: 230px; padding-bottom: 15px; z-index: 2;
+            -webkit-overflow-scrolling: touch; scrollbar-width: none;
+        }
+        .gallery-wrap::-webkit-scrollbar { display: none; }
+        
+        .polaroid {
+            flex: 0 0 auto; scroll-snap-align: center;
+            width: 200px; 
+            height: 250px; 
+            background: white; padding: 10px 10px 20px 10px; margin: 5px 15px;
+            border-radius: 8px; box-shadow: 0 10px 20px rgba(0,0,0,0.15); transform: rotate(-2deg);
+            display: flex; flex-direction: column; justify-content: space-between; align-items: center;
+        }
+        .polaroid:nth-child(even) { transform: rotate(2deg); }
+        .polaroid img { width: 100%; height: 185px; object-fit: cover; border-radius: 5px; }
+        .polaroid-caption { font-weight: 700; color: #ff758c; margin-top: 5px; font-size: 16px; }
+        
+        /* Interactive Balloons */
+        .balloon-game { display: flex; gap: 20px; margin: 20px 0; z-index: 3; }
+        .pop-balloon {
+            width: 65px; height: 80px; background: #ff7eb3;
+            border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%; cursor: pointer; position: relative;
+            box-shadow: inset -5px -5px 10px rgba(0,0,0,0.1), 0 10px 15px rgba(255, 126, 179, 0.4);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            animation: swing 3s infinite ease-in-out alternate;
+        }
+        .pop-balloon::before {
+            content: ''; position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%);
+            width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-bottom: 10px solid #ff7eb3;
+        }
+        .pop-balloon:nth-child(2) { background: #b0e0e6; animation-delay: 0.2s; border-bottom-color: #b0e0e6; }
+        .pop-balloon:nth-child(2)::before { border-bottom-color: #b0e0e6; }
+        .pop-balloon:nth-child(3) { background: #e6e6fa; animation-delay: 0.4s; border-bottom-color: #e6e6fa; }
+        .pop-balloon:nth-child(3)::before { border-bottom-color: #e6e6fa; }
+
+        /* Dynamic Pop Text Effect */
+        .pop-text-effect {
+            position: absolute; top: 18%; left: 50%;
+            transform: translateX(-50%) scale(0);
+            font-size: 45px; font-weight: 800; color: #ff3366; font-family: 'Quicksand', sans-serif;
+            text-shadow: 3px 3px 0 #fff, -3px -3px 0 #fff, 3px -3px 0 #fff, -3px 3px 0 #fff, 0 8px 15px rgba(255,117,140,0.5);
+            z-index: 50; pointer-events: none;
+            animation: popUpMsg 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        @keyframes popUpMsg {
+            0% { transform: translateX(-50%) scale(0); opacity: 0; }
+            20% { transform: translateX(-50%) scale(1.2); opacity: 1; }
+            80% { transform: translateX(-50%) scale(1); opacity: 1; }
+            100% { transform: translateX(-50%) scale(0.5); opacity: 0; }
+        }
+
+        /* --- New Fortune Wheel (Roulette Style) --- */
+        .wheel-wrapper {
+            position: relative; width: 250px; height: 250px; margin: 20px auto; 
+            filter: drop-shadow(0 15px 25px rgba(255,182,193,0.6));
+        }
+        /* Top Pointer */
+        .wheel-pointer {
+            position: absolute; top: -12px; left: 50%; transform: translateX(-50%); z-index: 10;
+            width: 0; height: 0; 
+            border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 28px solid #ff3366;
+            filter: drop-shadow(0 4px 4px rgba(0,0,0,0.3));
+        }
+        /* Outer Rim */
+        .wheel-outer {
+            width: 100%; height: 100%; border-radius: 50%;
+            background: #ff7eb3; padding: 12px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.2), 0 0 0 5px rgba(255,255,255,0.5);
+            position: relative;
+            transition: transform 4.5s cubic-bezier(0.17, 0.67, 0.12, 0.99); /* Smooth realistic spin */
+        }
+        /* Inner Colorful Wheel */
+        .wheel-inner {
+            width: 100%; height: 100%; border-radius: 50%;
+            background: conic-gradient( 
+                #ffd9e8 0 60deg, 
+                #ffb6c1 60deg 120deg, 
+                #ff9ec1 120deg 180deg, 
+                #b0e0e6 180deg 240deg, 
+                #e6e6fa 240deg 300deg, 
+                #fbc0cb 300deg 360deg 
+            );
+            position: relative; overflow: hidden;
+            border: 3px solid #fff;
+        }
+        /* Numbers inside slices */
+        .wheel-num {
+            position: absolute; top: 50%; left: 50%; margin-top: -15px; margin-left: -15px;
+            width: 30px; height: 30px; text-align: center;
+            font-weight: 800; font-size: 24px; color: #5e4b5a;
+            font-family: 'Quicksand', sans-serif;
+            text-shadow: 1px 1px 0 rgba(255,255,255,0.8);
+        }
+        /* Center Pin */
+        .wheel-center {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 28px; height: 28px; background: #fff; border-radius: 50%;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.4), inset 0 0 4px rgba(0,0,0,0.1);
+            border: 4px solid #ff7eb3; z-index: 5;
+        }
+        /* Decorative Pegs on Rim */
+        .wheel-pegs { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+        .wheel-pegs .peg {
+            position: absolute; top: 50%; left: 50%; margin-top: -5px; margin-left: -5px;
+            width: 10px; height: 10px; background: #fff; border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        /* Voice Note */
+        .voice-note {
+            background: rgba(255,255,255,0.9); border-radius: 30px; padding: 10px 20px; display: flex; align-items: center; gap: 10px;
+            box-shadow: 0 5px 15px rgba(255, 182, 193, 0.4); margin-top: 15px; cursor: pointer; border: 2px solid #ffe2ed;
+        }
+        .play-btn { width: 35px; height: 35px; background: #ff7eb3; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; }
+        .waveform { height: 20px; flex-grow: 1; background: repeating-linear-gradient(90deg, #ffb6c1, #ffb6c1 2px, transparent 2px, transparent 4px); opacity: 0.5; border-radius: 10px; }
+        .voice-note.playing .waveform { opacity: 1; animation: wave 1s infinite alternate; }
+
+        /* Scratch Card */
+        .scratch-container { position: relative; width: 220px; height: 220px; margin: 20px auto; border-radius: 20px; overflow: hidden; box-shadow: 0 15px 25px rgba(0,0,0,0.1); z-index: 2; }
+        .scratch-secret { position: absolute; top:0; left:0; width:100%; height:100%; background: #fff5f9; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 22px; font-weight: bold; color: #d6336c; padding: 20px; text-align: center; }
+        canvas { position: absolute; top:0; left:0; width:100%; height:100%; touch-action: none; cursor: pointer; }
+
+        /* Utilities */
+        .hidden { display: none !important; opacity: 0; }
+        .bg-item { position: absolute; pointer-events: none; opacity: 0.5; z-index: 0; animation: floatUp linear infinite; }
+        .typewriter-box { text-align: left; background: rgba(255, 255, 255, 0.8); padding: 15px; border-radius: 15px; box-shadow: 0 8px 20px rgba(255, 182, 193, 0.2); font-size: 17px; font-weight: 600; color: #b34e7a; min-height: 120px; border: 2px dashed #ffc0cb; line-height: 1.5; }
+        
+        @keyframes floatUp { 0% { transform: translateY(100vh) scale(0.5) rotate(0deg); opacity: 0; } 20% { opacity: 0.6; } 80% { opacity: 0.6; } 100% { transform: translateY(-20vh) scale(1.2) rotate(360deg); opacity: 0; } }
+        @keyframes swing { 0% { transform: rotate(-3deg); } 100% { transform: rotate(3deg); } }
+        @keyframes wave { 0% { filter: contrast(1); } 100% { filter: contrast(2) hue-rotate(15deg); } }
+        @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-10px);} 75% {transform: translateX(10px);} }
+        .shake-anim { animation: shake 0.4s ease-in-out; }
+    </style>
+</head>
+<body>
+
+    <div class="mobile-container" id="main-container">
+
+        <!-- SCREEN 1: Intro -->
+        <div id="screen-1" class="screen active">
+            <div class="sticker-box" style="animation: swing 3s infinite alternate;">
+                <div class="tenor-gif-embed" data-postid="16115986830929782472" data-share-method="host" data-aspect-ratio="1" data-width="100%"></div>
+            </div>
+            <h2>তুমি কি জানো আজকে একটা কিউটিপাইয়ের জন্মদিন? 🤔</h2>
+            <button class="btn" onclick="goToScreen(2)">চলো দেখি এটা কে 🤔</button>
+        </div>
+
+        <!-- SCREEN 2: Angry/Cute Cat -->
+        <div id="screen-2" class="screen">
+            <div class="sticker-box shake-anim" style="animation-iteration-count: infinite; animation-duration: 2s;">
+                <div class="tenor-gif-embed" data-postid="22885994" data-share-method="host" data-aspect-ratio="1" data-width="100%"></div>
+            </div>
+            <h2 style="font-size: 28px;">এত ভাবার কি আছে 😠</h2>
+            <p style="font-size: 20px; font-weight: 700; color: #d6336c; margin-bottom: 5px;">আরেহ এটা তুমি!</p>
+            <p>তোমার জন্য ছোট্ট কিছু আছে...</p>
+            <button class="btn" onclick="goToScreen(3)">🎁 সারপ্রাইজ শুরু করি</button>
+        </div>
+
+        <!-- SCREEN 3: Cake (Original) -->
+        <div id="screen-3" class="screen">
+            <div id="anim-cake" class="lottie-container"></div>
+            <h2>কেক কাটা যাক! 🎂</h2>
+            <button class="btn" onclick="goToScreen(4)">সামনে যাই ➔</button>
+        </div>
+
+        <!-- SCREEN 4: Balloons -->
+        <div id="screen-4" class="screen">
+            <h2>এবার পার্টি টাইম! 🎉</h2>
+            <p>নিচের ৩টি বেলুন ফাটাও!</p>
+            <div id="anim-balloons" class="lottie-bg" style="opacity: 0.2;"></div>
+            
+            <div class="balloon-game">
+                <div class="pop-balloon" onclick="popMe(this, 0)"></div>
+                <div class="pop-balloon" onclick="popMe(this, 1)"></div>
+                <div class="pop-balloon" onclick="popMe(this, 2)"></div>
+            </div>
+            <button id="btn-screen-4" class="btn hidden" onclick="goToScreen(5)">সামনে যাই ➔</button>
+        </div>
+
+        <!-- SCREEN 5: Fortune Wheel (Age 17) -->
+        <div id="screen-5" class="screen">
+            <h2>Age Reveal Time! ⏳</h2>
+            <p>হুইলটা ঘুরিয়ে দেখি বয়স কত হলো...</p>
+            
+            <div class="wheel-wrapper">
+                <div class="wheel-pointer"></div>
+                <div class="wheel-outer" id="age-wheel">
+                    <div class="wheel-inner">
+                        <!-- Each text is rotated from center and pushed outwards -->
+                        <div class="wheel-num" style="transform: rotate(30deg) translateY(-72px);">15</div>
+                        <div class="wheel-num" style="transform: rotate(90deg) translateY(-72px);">16</div>
+                        <div class="wheel-num" style="transform: rotate(150deg) translateY(-72px);">17</div>
+                        <div class="wheel-num" style="transform: rotate(210deg) translateY(-72px);">18</div>
+                        <div class="wheel-num" style="transform: rotate(270deg) translateY(-72px);">19</div>
+                        <div class="wheel-num" style="transform: rotate(330deg) translateY(-72px);">20</div>
+                    </div>
+                    <div class="wheel-center"></div>
+                    <!-- White Pegs around the wheel -->
+                    <div class="wheel-pegs">
+                        <div class="peg" style="transform: rotate(0deg) translateY(-115px)"></div>
+                        <div class="peg" style="transform: rotate(30deg) translateY(-115px)"></div>
+                        <div class="peg" style="transform: rotate(60deg) translateY(-115px)"></div>
+                        <div class="peg" style="transform: rotate(90deg) translateY(-115px)"></div>
+                        <div class="peg" style="transform: rotate(120deg) translateY(-115px)"></div>
+                        <div class="peg" style="transform: rotate(150deg) translateY(-115px)"></div>
+                        <div class="peg" style="transform: rotate(180deg) translateY(-115px)"></div>
+                        <div class="peg" style="transform: rotate(210deg) translateY(-115px)"></div>
+                        <div class="peg" style="transform: rotate(240deg) translateY(-115px)"></div>
+                        <div class="peg" style="transform: rotate(270deg) translateY(-115px)"></div>
+                        <div class="peg" style="transform: rotate(300deg) translateY(-115px)"></div>
+                        <div class="peg" style="transform: rotate(330deg) translateY(-115px)"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="btn" id="spin-btn" onclick="spinWheel()">Spin The Wheel 🎡</button>
+            <h2 id="age-msg" class="hidden" style="margin-top: 10px; font-size: 26px; color: #ff3366;">Welcome to age 17! 🎉</h2>
+            <button id="btn-screen-5" class="btn hidden" onclick="goToScreen(6)">সামনে যাই ➔</button>
+        </div>
+
+        <!-- SCREEN 6: Swipe Gallery -->
+        <div id="screen-6" class="screen">
+            <div id="anim-paper" class="lottie-bg"></div>
+            <h2>কিছু স্পেশাল মেমোরি 📸</h2>
+            <p style="font-size: 15px;">(ডানে-বাঁয়ে সোয়াইপ করো)</p>
+            
+            <div class="gallery-wrap">
+                <div class="polaroid">
+                    <img src="https://i.postimg.cc/XNDgS4vM/IMG-20260222-WA0004.jpg" alt="photo 1">
+                    <div class="polaroid-caption">~ মিষ্টি হাসি ~</div>
+                </div>
+                <div class="polaroid">
+                    <img src="https://i.postimg.cc/XNDgS4vM/IMG-20260222-WA0004.jpg" style="filter: hue-rotate(45deg);" alt="photo 2">
+                    <div class="polaroid-caption">~ সবচেয়ে কিউট ~</div>
+                </div>
+                <div class="polaroid">
+                    <img src="https://i.postimg.cc/XNDgS4vM/IMG-20260222-WA0004.jpg" style="filter: grayscale(50%);" alt="photo 3">
+                    <div class="polaroid-caption">~ পারফেক্ট ফ্রেন্ড ~</div>
+                </div>
+            </div>
+
+            <button class="btn" onclick="goToScreen(7)">✉️ আমার চিঠি পড়ো</button>
+        </div>
+
+        <!-- SCREEN 7: Letter & Voice Note -->
+        <div id="screen-7" class="screen">
+            <div id="anim-letter" class="lottie-container lottie-small" style="margin-bottom: 10px;"></div>
+            <h2>শুভ জন্মদিন 💖</h2>
+            
+            <div class="typewriter-box" id="letter-content"></div>
+
+            <!-- Voice Note Player -->
+            <div class="voice-note" id="v-note" onclick="playVoiceNote()">
+                <div class="play-btn" id="v-icon">▶</div>
+                <div class="waveform"></div>
+                <span style="font-size: 14px; font-weight: bold; color: #b34e7a;">ভয়েস নোট শোনো</span>
+            </div>
+
+            <button id="btn-screen-7" class="btn hidden" onclick="goToScreen(8)">আরও একটা জিনিস ➔</button>
+        </div>
+
+        <!-- SCREEN 8: Scratch Card (Silver Color) -->
+        <div id="screen-8" class="screen">
+            <h2>গোপন মেসেজ! 🤫</h2>
+            <p>আঙুল দিয়ে ঘষে মেসেজটা পড়ো...</p>
+            
+            <div class="scratch-container">
+                <div class="scratch-secret">
+                    <span style="font-size: 45px;">👑</span><br>
+                    You are the Best Person Ever! ❤️
+                </div>
+                <canvas id="scratch-canvas" width="220" height="220"></canvas>
+            </div>
+
+            <button id="btn-screen-8" class="btn hidden" onclick="goToScreen(9)">ফাইনাল গিফট ➔</button>
+        </div>
+
+        <!-- SCREEN 9: Final Gift -->
+        <div id="screen-9" class="screen">
+            <h2 id="gift-text">গিফটের উপরে ট্যাপ করো...</h2>
+            <div id="anim-gift" class="lottie-container" style="cursor: pointer; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'" onclick="openFinalGift()"></div>
+            
+            <div id="final-msg-box" class="hidden" style="animation: swing 3s infinite alternate;">
+                <h2 style="font-size: 32px; text-shadow: 0 0 10px rgba(255,117,140,0.5);">🎉 সারপ্রাইজ! 🎉</h2>
+                <p style="color:#d6336c; font-weight: 700; font-size: 20px; line-height: 1.5; margin-top: 10px;">
+                    অনেক অনেক ভালোবাসা তোমার জন্য! ❤️<br>
+                    সারাজীবন এমনই হাসিখুশি থেকো!
+                </p>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Original Audio file -->
+    <audio id="birthday-song" loop>
+        <source src="birthday-102.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Tenor script -->
+    <script type="text/javascript" async src="https://tenor.com/embed.js"></script>
+
+    <script>
+        // Lottie Initialization
+        function loadAnim(containerId, filename, loop = true) {
+            return lottie.loadAnimation({
+                container: document.getElementById(containerId), renderer: 'svg', loop: loop, autoplay: true, path: filename 
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            loadAnim('anim-cake', 'birthday cake.json');
+            loadAnim('anim-balloons', 'animated bellons.json');
+            loadAnim('anim-paper', 'decoration paper.json');
+            loadAnim('anim-letter', 'letter box (1).json');
+            loadAnim('anim-gift', 'gift box.json');
+            createBackgroundItems();
+            initScratchCard();
+        });
+
+        // Audio Autoplay Setup
+        window.addEventListener('load', function() {
+            const audio = document.getElementById('birthday-song');
+            audio.play().catch(e => {
+                document.body.addEventListener('click', function initAudio() {
+                    audio.play(); document.body.removeEventListener('click', initAudio);
+                }, { once: true });
+            });
+        });
+
+        // Screen Navigation
+        function goToScreen(num) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('screen-' + num).classList.add('active');
+            
+            if (num === 7 && !typed) { startTypewriter(); typed = true; }
+        }
+
+        // --- Balloon logic & Pop Text ---
+        let poppedBalloons = 0;
+        const popWords = ["CUTE! 💖", "SWEET! 🍬", "BEAUTIFUL! ✨"]; 
+        
+        function popMe(balloon, index) {
+            if(balloon.style.transform !== "scale(0)") {
+                balloon.style.transform = "scale(0)"; balloon.style.opacity = "0"; 
+                
+                // Show Dynamic Text
+                let textEl = document.createElement('div');
+                textEl.innerText = popWords[index];
+                textEl.className = 'pop-text-effect';
+                document.getElementById('screen-4').appendChild(textEl);
+                
+                setTimeout(() => { textEl.remove(); }, 1500);
+
+                poppedBalloons++;
+                confetti({ particleCount: 20, spread: 40, origin: { x: balloon.getBoundingClientRect().left / window.innerWidth, y: balloon.getBoundingClientRect().top / window.innerHeight } });
+                
+                if(poppedBalloons >= 3) {
+                    setTimeout(() => { document.getElementById('btn-screen-4').classList.remove('hidden'); triggerConfetti(); }, 800);
+                }
+            }
+        }
+
+        // --- Fortune Wheel Logic ---
+        function spinWheel() {
+            const wheel = document.getElementById('age-wheel');
+            const btn = document.getElementById('spin-btn');
+            btn.classList.add('hidden'); // Hide spin button
+            
+            // Math magic: Rotate so '17' perfectly aligns at the top
+            // '17' is originally at 150deg. Rotating by 2010deg (5 full spins + 210deg).
+            // 150 + 210 = 360deg (which is the top!)
+            wheel.style.transform = `rotate(2010deg)`;
+            
+            // Show message after spin finishes
+            setTimeout(() => {
+                document.getElementById('age-msg').classList.remove('hidden');
+                document.getElementById('btn-screen-5').classList.remove('hidden');
+                triggerConfetti();
+            }, 4500);
+        }
+
+        // --- Typewriter Logic ---
+        const letterText = "পৃথিবীর সবচেয়ে দারুণ মানুষটিকে শুভ জন্মদিন! 🌟 তুমি জানো না তুমি কতটা স্পেশাল। তোমার এই মিষ্টি হাসিটা যেন সবসময় এমনই থাকে ❤️";
+        let textIndex = 0; let typed = false;
+        function startTypewriter() {
+            if (textIndex < letterText.length) {
+                document.getElementById("letter-content").innerHTML += letterText.charAt(textIndex);
+                textIndex++; setTimeout(startTypewriter, 70);
+            } else {
+                setTimeout(() => { document.getElementById("btn-screen-7").classList.remove("hidden"); }, 500);
+            }
+        }
+
+        // --- Voice Note Demo ---
+        let isPlaying = false;
+        function playVoiceNote() {
+            const vn = document.getElementById('v-note');
+            const icon = document.getElementById('v-icon');
+            if(isPlaying) return;
+            isPlaying = true; vn.classList.add('playing'); icon.innerText = "⏸";
+            setTimeout(() => { vn.classList.remove('playing'); icon.innerText = "▶"; isPlaying = false; }, 5000);
+        }
+
+        // --- Scratch Card (Silver Color) ---
+        function initScratchCard() {
+            const canvas = document.getElementById('scratch-canvas');
+            const ctx = canvas.getContext('2d');
+            let isDrawing = false; let scratchedPixels = 0;
+            
+            // Silver Cover
+            ctx.fillStyle = '#b5b5b5';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            for(let i=0; i<100; i++) {
+                ctx.fillStyle = 'rgba(255,255,255,0.1)';
+                ctx.fillRect(Math.random()*canvas.width, Math.random()*canvas.height, 10, 10);
+            }
+            
+            ctx.font = 'bold 22px "Baloo Da 2"';
+            ctx.fillStyle = '#ffffff';
+            ctx.textAlign = "center";
+            ctx.fillText('এখানে ঘষো! 🪙', canvas.width/2, canvas.height/2 + 8);
+            
+            function getPos(e) {
+                const rect = canvas.getBoundingClientRect();
+                let clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                let clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                return { x: clientX - rect.left, y: clientY - rect.top };
+            }
+            
+            function scratch(e) {
+                if(!isDrawing) return;
+                e.preventDefault(); 
+                const pos = getPos(e);
+                ctx.globalCompositeOperation = 'destination-out';
+                ctx.beginPath(); ctx.arc(pos.x, pos.y, 25, 0, Math.PI*2); ctx.fill();
+                
+                scratchedPixels++;
+                if(scratchedPixels > 40) { 
+                    document.getElementById('btn-screen-8').classList.remove('hidden');
+                }
+            }
+            
+            canvas.addEventListener('mousedown', (e)=>{ isDrawing=true; scratch(e); });
+            canvas.addEventListener('mousemove', scratch);
+            canvas.addEventListener('mouseup', ()=> isDrawing=false);
+            canvas.addEventListener('touchstart', (e)=>{ isDrawing=true; scratch(e); }, {passive: false});
+            canvas.addEventListener('touchmove', scratch, {passive: false});
+            canvas.addEventListener('touchend', ()=> isDrawing=false);
+        }
+
+        // --- Final Gift ---
+        function openFinalGift() {
+            document.getElementById('anim-gift').style.display = 'none';
+            document.getElementById('gift-text').classList.add('hidden');
+            document.getElementById('final-msg-box').classList.remove('hidden');
+            
+            var duration = 4 * 1000; var end = Date.now() + duration;
+            (function frame() {
+                confetti({ particleCount: 10, angle: 60, spread: 55, origin: { x: 0 }, colors: ['#ffb6c1', '#ff7eb3', '#fff'] });
+                confetti({ particleCount: 10, angle: 120, spread: 55, origin: { x: 1 }, colors: ['#ffb6c1', '#ff7eb3', '#fff'] });
+                if (Date.now() < end) requestAnimationFrame(frame);
+            }());
+        }
+
+        function triggerConfetti() {
+            confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#ffb6c1', '#ff7eb3', '#b0e0e6', '#fbc0cb'] });
+        }
+
+        function createBackgroundItems() {
+            const container = document.getElementById('main-container');
+            const items = ['✨', '💖', '🌸', '✨', '🎈'];
+            setInterval(() => {
+                const el = document.createElement('div');
+                el.className = 'bg-item'; el.innerText = items[Math.floor(Math.random() * items.length)];
+                el.style.left = Math.random() * 100 + '%'; el.style.fontSize = (Math.random() * 15 + 10) + 'px';
+                el.style.animationDuration = (Math.random() * 3 + 4) + 's'; 
+                container.appendChild(el); setTimeout(() => el.remove(), 7000);
+            }, 800);
+        }
+    </script>
+</body>
+</html>
